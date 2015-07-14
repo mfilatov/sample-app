@@ -13,6 +13,8 @@ public class Address implements Serializable {
     @Id
     private String id;
 
+    private String apt;
+
     private String street;
 
     private String city;
@@ -27,7 +29,8 @@ public class Address implements Serializable {
     }
 
     @PersistenceConstructor
-    public Address(String street, String city, String state, String zip, String country) {
+    public Address(String apt, String street, String city, String state, String zip, String country) {
+        this.apt = apt;
         this.street = street;
         this.city = city;
         this.state = state;
@@ -37,6 +40,14 @@ public class Address implements Serializable {
 
     public String getId() {
         return id;
+    }
+
+    public String getApt() {
+        return apt;
+    }
+
+    public void setApt(String apt) {
+        this.apt = apt;
     }
 
     public String getStreet() {

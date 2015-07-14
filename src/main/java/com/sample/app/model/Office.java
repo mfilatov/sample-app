@@ -2,7 +2,6 @@ package com.sample.app.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
@@ -16,7 +15,6 @@ public class Office implements Serializable {
 
     private String name;
 
-    @DBRef
     private Address address;
 
     public Office() {

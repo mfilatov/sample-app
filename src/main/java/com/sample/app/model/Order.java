@@ -5,6 +5,8 @@ import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
+
 @Document(collection = Order.COLLECTION_NAME)
 public class Order {
     public static final String COLLECTION_NAME = "orders";
@@ -12,16 +14,17 @@ public class Order {
     @Id
     private String id;
 
-    private String fullName;
-
-    private String phoneNumber;
+    private String purchaseNumber;
 
     private double volume;
 
-    private int quatity;
+    private int quantity;
 
-    @DBRef
+    private Date date;
+
     private Address address;
+
+    private Contact contact;
 
     @DBRef
     private Office office;
@@ -30,12 +33,13 @@ public class Order {
     }
 
     @PersistenceConstructor
-    public Order(String fullName, String phoneNumber, double volume, int quatity, Address address, Office office) {
-        this.fullName = fullName;
-        this.phoneNumber = phoneNumber;
+    public Order(String purchaseNumber, double volume, int quantity, Date date, Address address, Contact contact, Office office) {
+        this.purchaseNumber = purchaseNumber;
         this.volume = volume;
-        this.quatity = quatity;
+        this.quantity = quantity;
+        this.date = date;
         this.address = address;
+        this.contact = contact;
         this.office = office;
     }
 
@@ -43,20 +47,12 @@ public class Order {
         return id;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getPurchaseNumber() {
+        return purchaseNumber;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setPurchaseNumber(String purchaseNumber) {
+        this.purchaseNumber = purchaseNumber;
     }
 
     public double getVolume() {
@@ -67,12 +63,20 @@ public class Order {
         this.volume = volume;
     }
 
-    public int getQuatity() {
-        return quatity;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setQuatity(int quatity) {
-        this.quatity = quatity;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public Address getAddress() {
@@ -81,6 +85,14 @@ public class Order {
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public Contact getContact() {
+        return contact;
+    }
+
+    public void setContact(Contact contact) {
+        this.contact = contact;
     }
 
     public Office getOffice() {
