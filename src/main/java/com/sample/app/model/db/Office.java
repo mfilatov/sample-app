@@ -1,4 +1,4 @@
-package com.sample.app.model;
+package com.sample.app.model.db;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;

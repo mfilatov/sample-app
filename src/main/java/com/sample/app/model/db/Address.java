@@ -1,20 +1,8 @@
-package com.sample.app.model;
-
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.PersistenceConstructor;
-import org.springframework.data.mongodb.core.mapping.Document;
+package com.sample.app.model.db;
 
 import java.io.Serializable;
 
-@Document(collection = Address.COLLECTION_NAME)
 public class Address implements Serializable {
-    public static final String COLLECTION_NAME = "addresses";
-
-    @Id
-    private String id;
-
-    private String apt;
-
     private String street;
 
     private String city;
@@ -28,26 +16,12 @@ public class Address implements Serializable {
     public Address() {
     }
 
-    @PersistenceConstructor
-    public Address(String apt, String street, String city, String state, String zip, String country) {
-        this.apt = apt;
+    public Address(String street, String city, String state, String zip, String country) {
         this.street = street;
         this.city = city;
         this.state = state;
         this.zip = zip;
         this.country = country;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getApt() {
-        return apt;
-    }
-
-    public void setApt(String apt) {
-        this.apt = apt;
     }
 
     public String getStreet() {

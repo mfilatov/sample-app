@@ -13,6 +13,8 @@
 
     <context:component-scan base-package="com.sample.app.dao"/>
     <context:component-scan base-package="com.sample.app.model"/>
+    <context:component-scan base-package="com.sample.app.model.db"/>
+    <context:component-scan base-package="com.sample.app.model.pojo"/>
     <context:component-scan base-package="com.sample.app.service"/>
 
     <context:property-placeholder location="classpath:database.properties"/>

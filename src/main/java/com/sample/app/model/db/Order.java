@@ -1,5 +1,7 @@
-package com.sample.app.model;
+package com.sample.app.model.db;
 
+import com.sample.app.model.DeliveryShift;
+import com.sample.app.model.OrderStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -14,13 +16,19 @@ public class Order {
     @Id
     private String id;
 
-    private String purchaseNumber;
+    private OrderStatus orderStatus;
 
-    private double volume;
+    private Long purchaseNumber;
 
-    private int quantity;
+    private Double volume;
 
-    private Date date;
+    private Integer quantity;
+
+    private Date deliveryDate;
+
+    private DeliveryShift deliveryShift;
+
+    private String rawData;
 
     private Address address;
 
@@ -33,11 +41,14 @@ public class Order {
     }
 
     @PersistenceConstructor
-    public Order(String purchaseNumber, double volume, int quantity, Date date, Address address, Contact contact, Office office) {
+    public Order(OrderStatus orderStatus, Long purchaseNumber, double volume, int quantity, Date deliveryDate, DeliveryShift deliveryShift, String rawData, Address address, Contact contact, Office office) {
+        this.orderStatus = orderStatus;
         this.purchaseNumber = purchaseNumber;
         this.volume = volume;
         this.quantity = quantity;
-        this.date = date;
+        this.deliveryDate = deliveryDate;
+        this.deliveryShift = deliveryShift;
+        this.rawData = rawData;
         this.address = address;
         this.contact = contact;
         this.office = office;
@@ -47,11 +58,19 @@ public class Order {
         return id;
     }
 
-    public String getPurchaseNumber() {
+    public OrderStatus getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    public Long getPurchaseNumber() {
         return purchaseNumber;
     }
 
-    public void setPurchaseNumber(String purchaseNumber) {
+    public void setPurchaseNumber(Long purchaseNumber) {
         this.purchaseNumber = purchaseNumber;
     }
 
@@ -71,12 +90,28 @@ public class Order {
         this.quantity = quantity;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getDeliveryDate() {
+        return deliveryDate;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDeliveryDate(Date deliveryDate) {
+        this.deliveryDate = deliveryDate;
+    }
+
+    public DeliveryShift getDeliveryShift() {
+        return deliveryShift;
+    }
+
+    public void setDeliveryShift(DeliveryShift deliveryShift) {
+        this.deliveryShift = deliveryShift;
+    }
+
+    public String getRawData() {
+        return rawData;
+    }
+
+    public void setRawData(String rawData) {
+        this.rawData = rawData;
     }
 
     public Address getAddress() {
