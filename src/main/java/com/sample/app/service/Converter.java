@@ -4,6 +4,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import com.sample.app.dao.OfficeDAO;
+import com.sample.app.dao.OrderDAO;
 import com.sample.app.model.DeliveryShift;
 import com.sample.app.model.OrderStatus;
 import com.sample.app.model.db.Address;
@@ -62,6 +63,13 @@ public class Converter {
     @Autowired
     OfficeDAO officeDAO;
 
+    @Autowired
+    OrderDAO orderDAO;
+
+    @Autowired
+    GoogleGeoService googleGeoService;
+
+
     public List<Order> convert(InputStream stream) throws IOException {
         ArrayList<Order> result = new ArrayList<Order>();
         ICsvBeanReader beanReader = null;
@@ -72,20 +80,22 @@ public class Converter {
 
             OrderCSVBean orderCSVBean;
             while ((orderCSVBean = beanReader.read(OrderCSVBean.class, FIELD_MAPPING)) != null) {
+                String untokenizedRow = beanReader.getUntokenizedRow();
+
                 Order order = new Order();
-                order.setRawData(beanReader.getUntokenizedRow());
+                order.setRawData(untokenizedRow);
                 try {
                     order.setPurchaseNumber(getPurchaseNumber(orderCSVBean));
                     order.setVolume(getVolume(orderCSVBean));
                     order.setQuantity(getQuantity(orderCSVBean));
                     order.setDeliveryDate(getDeliveryDate(orderCSVBean));
                     order.setDeliveryShift(getDeliveryShift(orderCSVBean));
-                    order.setAddress(getAddress(orderCSVBean));
+                    order.setAddress(getFormattedAddress(orderCSVBean));
                     order.setContact(getContact(orderCSVBean));
                     order.setOffice(getOffice(orderCSVBean));
                     order.setOrderStatus(OrderStatus.PARSED);
                 } catch (Exception e) {
-                    logger.error("exception in CSV parsing process", e);
+                    logger.error("exception in CSV parsing process: " + untokenizedRow, e);
                     order.setOrderStatus(OrderStatus.PARSING_ERROR);
                 }
 
@@ -143,6 +153,22 @@ public class Converter {
                 orderCSVBean.getDestinationZip(),
                 orderCSVBean.getDestinationCountry()
         );
+    }
+
+    private String getFormattedAddress(OrderCSVBean orderCSVBean) throws Exception {
+        String street = orderCSVBean.getDestinationRawLine();
+        String city = orderCSVBean.getDestinationCity();
+        String state = orderCSVBean.getDestinationState();
+        String zip = orderCSVBean.getDestinationZip();
+        String country = orderCSVBean.getDestinationCountry();
+
+        if (street == null || city == null || state == null || zip == null || country == null) {
+            throw new Exception("Geo data should not be empty");
+        }
+
+        String address = street + ", " + city + ", " + state + " " + zip + ", " + country;
+
+        return googleGeoService.getFormattedAddress(address);
     }
 
     private Office getOffice(OrderCSVBean orderCSVBean) throws Exception {

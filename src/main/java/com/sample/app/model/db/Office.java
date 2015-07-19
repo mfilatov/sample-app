@@ -15,13 +15,13 @@ public class Office implements Serializable {
 
     private String name;
 
-    private Address address;
+    private String address;
 
     public Office() {
     }
 
     @PersistenceConstructor
-    public Office(String name, Address address) {
+    public Office(String name, String address) {
         this.name = name;
         this.address = address;
     }
@@ -38,11 +38,11 @@ public class Office implements Serializable {
         this.name = name;
     }
 
-    public Address getAddress() {
+    public String getAddress() {
         return address;
     }
 
-    public void setAddress(Address address) {
+    public void setAddress(String address) {
         this.address = address;
     }
 }

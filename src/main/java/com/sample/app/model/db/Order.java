@@ -30,7 +30,7 @@ public class Order {
 
     private String rawData;
 
-    private Address address;
+    private String address;
 
     private Contact contact;
 
@@ -41,7 +41,7 @@ public class Order {
     }
 
     @PersistenceConstructor
-    public Order(OrderStatus orderStatus, Long purchaseNumber, double volume, int quantity, Date deliveryDate, DeliveryShift deliveryShift, String rawData, Address address, Contact contact, Office office) {
+    public Order(OrderStatus orderStatus, Long purchaseNumber, double volume, int quantity, Date deliveryDate, DeliveryShift deliveryShift, String rawData, String address, Contact contact, Office office) {
         this.orderStatus = orderStatus;
         this.purchaseNumber = purchaseNumber;
         this.volume = volume;
@@ -114,11 +114,11 @@ public class Order {
         this.rawData = rawData;
     }
 
-    public Address getAddress() {
+    public String getAddress() {
         return address;
     }
 
-    public void setAddress(Address address) {
+    public void setAddress(String address) {
         this.address = address;
     }
 
