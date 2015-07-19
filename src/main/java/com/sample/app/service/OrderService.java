@@ -20,9 +20,6 @@ public class OrderService {
     public List<Order> loadOrders(InputStream inputStream) throws IOException {
         List<Order> orders = converter.convert(inputStream);
         if (orders != null && !orders.isEmpty()) {
-            for (Order order : orders) {
-
-            }
             orderDAO.insertAll(orders);
         }
 

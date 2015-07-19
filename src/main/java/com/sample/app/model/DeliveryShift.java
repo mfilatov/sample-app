@@ -17,7 +17,7 @@ public enum DeliveryShift {
 
     public static DeliveryShift parseByName(String name) {
         for (DeliveryShift deliveryShift : values()) {
-            if (name.equals(deliveryShift.name)) {
+            if (deliveryShift.name.equals(name)) {
                 return deliveryShift;
             }
         }

@@ -1,11 +1,11 @@
 package com.sample.app.service;
 
 import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberMatch;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import com.sample.app.dao.OfficeDAO;
 import com.sample.app.model.DeliveryShift;
+import com.sample.app.model.OrderStatus;
 import com.sample.app.model.db.Address;
 import com.sample.app.model.db.Contact;
 import com.sample.app.model.db.Office;
@@ -23,8 +23,8 @@ import org.supercsv.prefs.CsvPreference;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -63,29 +63,39 @@ public class Converter {
     OfficeDAO officeDAO;
 
     public List<Order> convert(InputStream stream) throws IOException {
+        ArrayList<Order> result = new ArrayList<Order>();
         ICsvBeanReader beanReader = null;
         try {
             beanReader = new CsvBeanReader(new InputStreamReader(stream), CsvPreference.STANDARD_PREFERENCE);
 
             beanReader.getHeader(true);
 
-            OrderCSVBean orderCSVBean = null;
-            while ( (orderCSVBean = beanReader.read(OrderCSVBean.class, FIELD_MAPPING)) != null ) {
+            OrderCSVBean orderCSVBean;
+            while ((orderCSVBean = beanReader.read(OrderCSVBean.class, FIELD_MAPPING)) != null) {
                 Order order = new Order();
-
+                order.setRawData(beanReader.getUntokenizedRow());
                 try {
+                    order.setPurchaseNumber(getPurchaseNumber(orderCSVBean));
+                    order.setVolume(getVolume(orderCSVBean));
+                    order.setQuantity(getQuantity(orderCSVBean));
                     order.setDeliveryDate(getDeliveryDate(orderCSVBean));
+                    order.setDeliveryShift(getDeliveryShift(orderCSVBean));
+                    order.setAddress(getAddress(orderCSVBean));
                     order.setContact(getContact(orderCSVBean));
+                    order.setOffice(getOffice(orderCSVBean));
+                    order.setOrderStatus(OrderStatus.PARSED);
                 } catch (Exception e) {
-                    order.setRawData(beanReader.getUntokenizedRow());
+                    logger.error("exception in CSV parsing process", e);
+                    order.setOrderStatus(OrderStatus.PARSING_ERROR);
                 }
-            }
 
+                result.add(order);
+            }
         } finally {
             IOUtils.closeQuietly(beanReader);
         }
 
-        return null;
+        return result;
     }
 
     private Long getPurchaseNumber(OrderCSVBean orderCSVBean) {
@@ -100,11 +110,17 @@ public class Converter {
         return Integer.parseInt(orderCSVBean.getHandlingUnitQuantity());
     }
 
-    private Date getDeliveryDate(OrderCSVBean orderCSVBean) throws ParseException {
+    private Date getDeliveryDate(OrderCSVBean orderCSVBean) throws Exception {
         String deliveryDateStr = orderCSVBean.getDeliveryDate();
+
+        if (deliveryDateStr == null) {
+            logger.error("deliveryDate is empty");
+            throw new Exception("deliveryDate is empty");
+        }
+
         try {
             return sdf.parse(deliveryDateStr);
-        } catch (ParseException e) {
+        } catch (Exception e) {
             logger.error("deliveryDate parse exception", e);
             throw e;
         }
@@ -130,9 +146,10 @@ public class Converter {
     }
 
     private Office getOffice(OrderCSVBean orderCSVBean) throws Exception {
-        Office office = officeDAO.findByName(orderCSVBean.getOriginName());
+        String originName = orderCSVBean.getOriginName();
+        Office office = officeDAO.findByName(originName);
         if (office == null) {
-            throw new Exception("Office not found");
+            throw new Exception("Office not found, name = " + originName);
         }
 
         return office;
