@@ -6,9 +6,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 
-@Document(collection = Office.COLLECTION_NAME)
-public class Office implements Serializable {
-    public static final String COLLECTION_NAME = "offices";
+@Document(collection = Storage.COLLECTION_NAME)
+public class Storage implements Serializable {
+    public static final String COLLECTION_NAME = "storages";
 
     @Id
     private String id;
@@ -17,11 +17,11 @@ public class Office implements Serializable {
 
     private String address;
 
-    public Office() {
+    public Storage() {
     }
 
     @PersistenceConstructor
-    public Office(String name, String address) {
+    public Storage(String name, String address) {
         this.name = name;
         this.address = address;
     }
@@ -44,5 +44,24 @@ public class Office implements Serializable {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Storage storage = (Storage) o;
+
+        if (!name.equals(storage.name)) return false;
+        return address.equals(storage.address);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + address.hashCode();
+        return result;
     }
 }

@@ -35,13 +35,13 @@ public class Order {
     private Contact contact;
 
     @DBRef
-    private Office office;
+    private Storage storage;
 
     public Order() {
     }
 
     @PersistenceConstructor
-    public Order(OrderStatus orderStatus, Long purchaseNumber, double volume, int quantity, Date deliveryDate, DeliveryShift deliveryShift, String rawData, String address, Contact contact, Office office) {
+    public Order(OrderStatus orderStatus, Long purchaseNumber, double volume, int quantity, Date deliveryDate, DeliveryShift deliveryShift, String rawData, String address, Contact contact, Storage storage) {
         this.orderStatus = orderStatus;
         this.purchaseNumber = purchaseNumber;
         this.volume = volume;
@@ -51,7 +51,7 @@ public class Order {
         this.rawData = rawData;
         this.address = address;
         this.contact = contact;
-        this.office = office;
+        this.storage = storage;
     }
 
     public String getId() {
@@ -130,11 +130,27 @@ public class Order {
         this.contact = contact;
     }
 
-    public Office getOffice() {
-        return office;
+    public Storage getStorage() {
+        return storage;
     }
 
-    public void setOffice(Office office) {
-        this.office = office;
+    public void setStorage(Storage storage) {
+        this.storage = storage;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Order order = (Order) o;
+
+        return purchaseNumber.equals(order.purchaseNumber);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return purchaseNumber.hashCode();
     }
 }

@@ -12,13 +12,13 @@ import java.util.List;
 @Service
 public class OrderService {
     @Autowired
-    Converter converter;
+    ConverterService converterService;
 
     @Autowired
     OrderDAO orderDAO;
 
     public List<Order> loadOrders(InputStream inputStream) throws IOException {
-        List<Order> orders = converter.convert(inputStream);
+        List<Order> orders = converterService.convert(inputStream);
         if (orders != null && !orders.isEmpty()) {
             orderDAO.insertAll(orders);
         }

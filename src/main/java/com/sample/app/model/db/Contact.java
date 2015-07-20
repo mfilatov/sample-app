@@ -1,16 +1,7 @@
 package com.sample.app.model.db;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.PersistenceConstructor;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = Contact.COLLECTION_NAME)
 public class Contact {
-    public static final String COLLECTION_NAME = "contacts";
-
-    @Id
-    private String id;
-
     private String fullName;
 
     private String phoneNumber;
@@ -18,14 +9,9 @@ public class Contact {
     public Contact() {
     }
 
-    @PersistenceConstructor
     public Contact(String fullName, String phoneNumber) {
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getFullName() {
@@ -42,5 +28,24 @@ public class Contact {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Contact contact = (Contact) o;
+
+        if (!fullName.equals(contact.fullName)) return false;
+        return !(phoneNumber != null ? !phoneNumber.equals(contact.phoneNumber) : contact.phoneNumber != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = fullName.hashCode();
+        result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
+        return result;
     }
 }

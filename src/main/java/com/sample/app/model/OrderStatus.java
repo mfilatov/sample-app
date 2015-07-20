@@ -2,7 +2,7 @@ package com.sample.app.model;
 
 public enum OrderStatus {
     PARSING_ERROR,
-    PARSED,
-    REJECTED,
+    DUPLICATED,
+    READY,
     IN_LIST
 }

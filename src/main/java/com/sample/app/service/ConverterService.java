@@ -3,13 +3,12 @@ package com.sample.app.service;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
-import com.sample.app.dao.OfficeDAO;
+import com.sample.app.dao.StorageDAO;
 import com.sample.app.dao.OrderDAO;
 import com.sample.app.model.DeliveryShift;
 import com.sample.app.model.OrderStatus;
-import com.sample.app.model.db.Address;
 import com.sample.app.model.db.Contact;
-import com.sample.app.model.db.Office;
+import com.sample.app.model.db.Storage;
 import com.sample.app.model.db.Order;
 import com.sample.app.model.pojo.OrderCSVBean;
 import org.apache.commons.io.IOUtils;
@@ -30,8 +29,8 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class Converter {
-    private static final Logger logger = LoggerFactory.getLogger(Converter.class);
+public class ConverterService {
+    private static final Logger logger = LoggerFactory.getLogger(ConverterService.class);
 
     private static final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 
@@ -61,7 +60,7 @@ public class Converter {
     private static final PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
 
     @Autowired
-    OfficeDAO officeDAO;
+    StorageDAO storageDAO;
 
     @Autowired
     OrderDAO orderDAO;
@@ -84,16 +83,22 @@ public class Converter {
 
                 Order order = new Order();
                 order.setRawData(untokenizedRow);
+
                 try {
-                    order.setPurchaseNumber(getPurchaseNumber(orderCSVBean));
+                    Long purchaseNumber = getPurchaseNumber(orderCSVBean);
+
+                    order.setPurchaseNumber(purchaseNumber);
                     order.setVolume(getVolume(orderCSVBean));
                     order.setQuantity(getQuantity(orderCSVBean));
                     order.setDeliveryDate(getDeliveryDate(orderCSVBean));
                     order.setDeliveryShift(getDeliveryShift(orderCSVBean));
                     order.setAddress(getFormattedAddress(orderCSVBean));
                     order.setContact(getContact(orderCSVBean));
-                    order.setOffice(getOffice(orderCSVBean));
-                    order.setOrderStatus(OrderStatus.PARSED);
+                    order.setStorage(getStorage(orderCSVBean));
+
+                    Order dbOrder = orderDAO.findByPurchaseNumberId(purchaseNumber);
+
+                    order.setOrderStatus(dbOrder == null ? OrderStatus.READY : OrderStatus.DUPLICATED);
                 } catch (Exception e) {
                     logger.error("exception in CSV parsing process: " + untokenizedRow, e);
                     order.setOrderStatus(OrderStatus.PARSING_ERROR);
@@ -145,16 +150,6 @@ public class Converter {
         return new Contact(orderCSVBean.getClientName(), phoneNumberUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.NATIONAL));
     }
 
-    private Address getAddress(OrderCSVBean orderCSVBean) {
-        return new Address(
-                orderCSVBean.getDestinationRawLine(),
-                orderCSVBean.getDestinationCity(),
-                orderCSVBean.getDestinationState(),
-                orderCSVBean.getDestinationZip(),
-                orderCSVBean.getDestinationCountry()
-        );
-    }
-
     private String getFormattedAddress(OrderCSVBean orderCSVBean) throws Exception {
         String street = orderCSVBean.getDestinationRawLine();
         String city = orderCSVBean.getDestinationCity();
@@ -171,13 +166,13 @@ public class Converter {
         return googleGeoService.getFormattedAddress(address);
     }
 
-    private Office getOffice(OrderCSVBean orderCSVBean) throws Exception {
+    private Storage getStorage(OrderCSVBean orderCSVBean) throws Exception {
         String originName = orderCSVBean.getOriginName();
-        Office office = officeDAO.findByName(originName);
-        if (office == null) {
-            throw new Exception("Office not found, name = " + originName);
+        Storage storage = storageDAO.findByName(originName);
+        if (storage == null) {
+            throw new Exception("Storage not found, name = " + originName);
         }
 
-        return office;
+        return storage;
     }
 }
