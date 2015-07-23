@@ -20,6 +20,8 @@ public class Order {
 
     private Long purchaseNumber;
 
+    private Integer orderNumber;
+
     private Double volume;
 
     private Integer quantity;
@@ -41,9 +43,10 @@ public class Order {
     }
 
     @PersistenceConstructor
-    public Order(OrderStatus orderStatus, Long purchaseNumber, double volume, int quantity, Date deliveryDate, DeliveryShift deliveryShift, String rawData, String address, Contact contact, Storage storage) {
+    public Order(OrderStatus orderStatus, Long purchaseNumber, Integer orderNumber, Double volume, Integer quantity, Date deliveryDate, DeliveryShift deliveryShift, String rawData, String address, Contact contact, Storage storage) {
         this.orderStatus = orderStatus;
         this.purchaseNumber = purchaseNumber;
+        this.orderNumber = orderNumber;
         this.volume = volume;
         this.quantity = quantity;
         this.deliveryDate = deliveryDate;
@@ -74,19 +77,27 @@ public class Order {
         this.purchaseNumber = purchaseNumber;
     }
 
-    public double getVolume() {
+    public Integer getOrderNumber() {
+        return orderNumber;
+    }
+
+    public void setOrderNumber(Integer orderNumber) {
+        this.orderNumber = orderNumber;
+    }
+
+    public Double getVolume() {
         return volume;
     }
 
-    public void setVolume(double volume) {
+    public void setVolume(Double volume) {
         this.volume = volume;
     }
 
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 

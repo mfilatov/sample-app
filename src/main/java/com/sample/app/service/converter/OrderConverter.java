@@ -1,4 +1,4 @@
-package com.sample.app.service;
+package com.sample.app.service.converter;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -11,6 +11,7 @@ import com.sample.app.model.db.Contact;
 import com.sample.app.model.db.Storage;
 import com.sample.app.model.db.Order;
 import com.sample.app.model.pojo.OrderCSVBean;
+import com.sample.app.service.GoogleGeoService;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +30,8 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class ConverterService {
-    private static final Logger logger = LoggerFactory.getLogger(ConverterService.class);
+public class OrderConverter implements Converter<Order, InputStream> {
+    private static final Logger logger = LoggerFactory.getLogger(OrderConverter.class);
 
     private static final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 
@@ -87,18 +88,20 @@ public class ConverterService {
                 try {
                     Long purchaseNumber = getPurchaseNumber(orderCSVBean);
 
-                    order.setPurchaseNumber(purchaseNumber);
-                    order.setVolume(getVolume(orderCSVBean));
-                    order.setQuantity(getQuantity(orderCSVBean));
-                    order.setDeliveryDate(getDeliveryDate(orderCSVBean));
-                    order.setDeliveryShift(getDeliveryShift(orderCSVBean));
-                    order.setAddress(getFormattedAddress(orderCSVBean));
-                    order.setContact(getContact(orderCSVBean));
-                    order.setStorage(getStorage(orderCSVBean));
-
                     Order dbOrder = orderDAO.findByPurchaseNumberId(purchaseNumber);
-
-                    order.setOrderStatus(dbOrder == null ? OrderStatus.READY : OrderStatus.DUPLICATED);
+                    if (dbOrder == null) {
+                        order.setPurchaseNumber(purchaseNumber);
+                        order.setVolume(getVolume(orderCSVBean));
+                        order.setQuantity(getQuantity(orderCSVBean));
+                        order.setDeliveryDate(getDeliveryDate(orderCSVBean));
+                        order.setDeliveryShift(getDeliveryShift(orderCSVBean));
+                        order.setAddress(getFormattedAddress(orderCSVBean));
+                        order.setContact(getContact(orderCSVBean));
+                        order.setStorage(getStorage(orderCSVBean));
+                        order.setOrderStatus(OrderStatus.READY);
+                    } else {
+                        order.setOrderStatus(OrderStatus.DUPLICATED);
+                    }
                 } catch (Exception e) {
                     logger.error("exception in CSV parsing process: " + untokenizedRow, e);
                     order.setOrderStatus(OrderStatus.PARSING_ERROR);
