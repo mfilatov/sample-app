@@ -1,12 +1,13 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt_rt"%>
 <html>
 <head>
     <title>All Orders</title>
 </head>
 <body>
-<table width="600px">
+<table width="1000px">
     <tr>
       <td><b>Order Number</b></td>
       <td><b>Address</b></td>
@@ -23,14 +24,14 @@
             <td>${order.orderStatus}</td>
             <td>${order.volume}</td>
             <td>${order.quantity}</td>
-            <td>${order.deliveryDate}</td>
+            <td><fmt:formatDate value="${order.deliveryDate}" pattern="MM/dd/yyyy"/></td>
             <td>${order.deliveryShift}</td>
-            <td><a href="/editOrder?id=${order.id}">Edit</a> | <a href="/deleteOrder?id=${order.id}">Delete</a></td>
+            <td><a href="./editOrder?id=${order.id}">Edit</a> | <a href="./deleteOrder?id=${order.id}">Delete</a></td>
         </tr>
     </c:forEach>
     <tr>
         <td colspan="5">
-            <a href="/addOrder">Add Order</a>
+            <a href="./addOrder">Add Order</a>
         </td>
     </tr>
 </table>
