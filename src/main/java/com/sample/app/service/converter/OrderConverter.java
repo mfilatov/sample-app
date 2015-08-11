@@ -97,7 +97,7 @@ public class OrderConverter implements Converter<Order, InputStream> {
                         order.setDeliveryShift(getDeliveryShift(orderCSVBean));
                         order.setAddress(getFormattedAddress(orderCSVBean));
                         order.setContact(getContact(orderCSVBean));
-                        order.setStorage(getStorage(orderCSVBean));
+                        order.setStorageAddress(getStorageAddress(orderCSVBean));
                         order.setOrderStatus(OrderStatus.READY);
                     } else {
                         order.setOrderStatus(OrderStatus.DUPLICATED);
@@ -169,13 +169,13 @@ public class OrderConverter implements Converter<Order, InputStream> {
         return googleGeoService.getFormattedAddress(address);
     }
 
-    private Storage getStorage(OrderCSVBean orderCSVBean) throws Exception {
+    private String getStorageAddress(OrderCSVBean orderCSVBean) throws Exception {
         String originName = orderCSVBean.getOriginName();
         Storage storage = storageDAO.findByName(originName);
         if (storage == null) {
             throw new Exception("Storage not found, name = " + originName);
         }
 
-        return storage;
+        return storage.getAddress();
     }
 }

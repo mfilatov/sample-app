@@ -2,6 +2,7 @@ package com.sample.app.model.db;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
@@ -15,6 +16,7 @@ public class Storage implements Serializable {
 
     private String name;
 
+    @Indexed
     private String address;
 
     public Storage() {

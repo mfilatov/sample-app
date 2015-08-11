@@ -4,12 +4,16 @@ import com.sample.app.model.DeliveryShift;
 import com.sample.app.model.OrderStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
-import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
 @Document(collection = Order.COLLECTION_NAME)
+@CompoundIndexes({
+        @CompoundIndex(name = "order_params_idx", def = "{'deliveryDate': 1, 'orderStatus': 1, 'deliveryShift': 1, 'volume': 1}")
+})
 public class Order {
     public static final String COLLECTION_NAME = "orders";
 
@@ -36,14 +40,13 @@ public class Order {
 
     private Contact contact;
 
-    @DBRef
-    private Storage storage;
+    private String storageAddress;
 
     public Order() {
     }
 
     @PersistenceConstructor
-    public Order(OrderStatus orderStatus, Long purchaseNumber, Integer orderNumber, Double volume, Integer quantity, Date deliveryDate, DeliveryShift deliveryShift, String rawData, String address, Contact contact, Storage storage) {
+    public Order(OrderStatus orderStatus, Long purchaseNumber, Integer orderNumber, Double volume, Integer quantity, Date deliveryDate, DeliveryShift deliveryShift, String rawData, String address, Contact contact, String storageAddress) {
         this.orderStatus = orderStatus;
         this.purchaseNumber = purchaseNumber;
         this.orderNumber = orderNumber;
@@ -54,7 +57,7 @@ public class Order {
         this.rawData = rawData;
         this.address = address;
         this.contact = contact;
-        this.storage = storage;
+        this.storageAddress = storageAddress;
     }
 
     public String getId() {
@@ -141,12 +144,12 @@ public class Order {
         this.contact = contact;
     }
 
-    public Storage getStorage() {
-        return storage;
+    public String getStorageAddress() {
+        return storageAddress;
     }
 
-    public void setStorage(Storage storage) {
-        this.storage = storage;
+    public void setStorageAddress(String storageAddress) {
+        this.storageAddress = storageAddress;
     }
 
     @Override

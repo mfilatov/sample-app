@@ -2,6 +2,8 @@ package com.sample.app.model.db;
 
 import com.sample.app.model.DeliveryShift;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -9,6 +11,9 @@ import java.util.Date;
 import java.util.List;
 
 @Document(collection = Delivery.COLLECTION_NAME)
+@CompoundIndexes({
+        @CompoundIndex(name = "delivery_params_idx", def = "{'deliveryDate': 1, 'deliveryShift': 1}")
+})
 public class Delivery {
     public static final String COLLECTION_NAME = "deliveries";
 

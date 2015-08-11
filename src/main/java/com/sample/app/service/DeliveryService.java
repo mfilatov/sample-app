@@ -7,6 +7,7 @@ import com.sample.app.model.OrderStatus;
 import com.sample.app.model.db.Delivery;
 import com.sample.app.model.db.Order;
 import com.sample.app.model.db.Storage;
+import com.sample.app.service.optimization.OptimizationStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,17 +25,37 @@ public class DeliveryService {
     @Autowired
     GoogleGeoService googleGeoService;
 
-    public Delivery createDelivery(Date deliveryDate, DeliveryShift deliveryShift, Storage storage) {
-        List<Order> orders = orderDAO.findByParams(deliveryDate, OrderStatus.READY, deliveryShift);
+    @Autowired
+    OptimizationStrategy optimizationStrategy;
 
+    public Delivery createDelivery(Date deliveryDate, DeliveryShift deliveryShift, Storage storage) {
         Delivery delivery = new Delivery();
         delivery.setDeliveryDate(deliveryDate);
         delivery.setDeliveryShift(deliveryShift);
         delivery.setStorage(storage);
-        delivery.setOrders(orders);
 
         deliveryDAO.insert(delivery);
 
         return delivery;
+    }
+
+    public void add(Delivery delivery) {
+        deliveryDAO.save(delivery);
+    }
+
+    public Delivery get(String id) {
+        return deliveryDAO.findById(id);
+    }
+
+    public List<Delivery> getAll() {
+        return deliveryDAO.findAll();
+    }
+
+    public void update(Delivery delivery) {
+        deliveryDAO.save(delivery);
+    }
+
+    public void remove(String id) {
+        deliveryDAO.remove(id);
     }
 }

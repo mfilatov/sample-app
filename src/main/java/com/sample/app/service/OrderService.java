@@ -43,8 +43,8 @@ public class OrderService {
         return orderDAO.findAll();
     }
 
-    public void update(Order contact) {
-        orderDAO.save(contact);
+    public void update(Order order) {
+        orderDAO.save(order);
     }
 
     public void remove(String id) {

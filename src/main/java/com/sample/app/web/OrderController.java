@@ -28,9 +28,9 @@ public class OrderController {
         webDataBinder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
     }
 
-    @RequestMapping(value = "/ordersList", method = RequestMethod.GET)
+    @RequestMapping(value = "/allOrders", method = RequestMethod.GET)
     public ModelAndView showAll() {
-        ModelAndView modelAndView = new ModelAndView("ordersList");
+        ModelAndView modelAndView = new ModelAndView("allOrders");
         modelAndView.addObject("orders", orderService.getAll());
 
         return modelAndView;
@@ -50,7 +50,7 @@ public class OrderController {
     public String deleteOrder(@RequestParam(required = true) String id) {
         orderService.remove(id);
 
-        return "redirect:./ordersList";
+        return "redirect:./allOrders";
     }
 
     @RequestMapping(value = "/saveOrder", method = RequestMethod.POST)
@@ -61,6 +61,6 @@ public class OrderController {
             orderService.update(order);
         }
 
-        return "redirect:./ordersList";
+        return "redirect:./allOrders";
     }
 }
