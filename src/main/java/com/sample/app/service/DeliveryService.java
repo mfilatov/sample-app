@@ -2,6 +2,7 @@ package com.sample.app.service;
 
 import com.sample.app.dao.DeliveryDAO;
 import com.sample.app.dao.OrderDAO;
+import com.sample.app.dao.StorageDAO;
 import com.sample.app.model.DeliveryShift;
 import com.sample.app.model.OrderStatus;
 import com.sample.app.model.db.Delivery;
@@ -23,12 +24,17 @@ public class DeliveryService {
     DeliveryDAO deliveryDAO;
 
     @Autowired
+    StorageDAO storageDAO;
+
+    @Autowired
     GoogleGeoService googleGeoService;
 
     @Autowired
     OptimizationStrategy optimizationStrategy;
 
-    public Delivery createDelivery(Date deliveryDate, DeliveryShift deliveryShift, Storage storage) {
+    public Delivery createDelivery(Date deliveryDate, DeliveryShift deliveryShift, String storageName) {
+        Storage storage = storageDAO.findByName(storageName);
+
         Delivery delivery = new Delivery();
         delivery.setDeliveryDate(deliveryDate);
         delivery.setDeliveryShift(deliveryShift);
